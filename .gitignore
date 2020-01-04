@@ -1,0 +1,8 @@
+# Exclude make build directories
+build/*
+!build/*.map
+!build/*.elf
+!build/*.hex
+!build/*.readelf
+.vscode/ipch*
+design/design.modus.lock

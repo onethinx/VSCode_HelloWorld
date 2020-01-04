@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Design version="12" device_library_hint_path="../../VSCode_OnethinxPack_macOS/PDL_1.3.1.1499/devicesupport.xml" xmlns="http://cypress.com/xsd/cydesignfile_v3">
+    <ToolInfo version="1.0.0"/>
+    <Devices>
+        <Device mpn="CY8C6347BZI-BLD53">
+            <BlockConfig>
+                <Block location="csd[0].csd[0]">
+                    <Alias value="CYBSP_CSD"/>
+                </Block>
+                <Block location="ioss[0].port[12].pin[4]">
+                    <Alias value="LED_BLUE"/>
+                    <Personality template="mxs40pin" version="1.1">
+                        <Param id="DriveModes" value="CY_GPIO_DM_STRONG_IN_OFF"/>
+                        <Param id="initialState" value="0"/>
+                        <Param id="vtrip" value="CY_GPIO_VTRIP_CMOS"/>
+                        <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
+                        <Param id="slewRate" value="CY_GPIO_SLEW_SLOW"/>
+                        <Param id="driveStrength" value="CY_GPIO_DRIVE_1_2"/>
+                        <Param id="sioOutputBuffer" value="true"/>
+                        <Param id="inFlash" value="true"/>
+                    </Personality>
+                </Block>
+                <Block location="ioss[0].port[12].pin[5]">
+                    <Alias value="LED_RED"/>
+                    <Personality template="mxs40pin" version="1.1">
+                        <Param id="DriveModes" value="CY_GPIO_DM_STRONG_IN_OFF"/>
+                        <Param id="initialState" value="0"/>
+                        <Param id="vtrip" value="CY_GPIO_VTRIP_CMOS"/>
+                        <Param id="isrTrigger" value="CY_GPIO_INTR_DISABLE"/>
+                        <Param id="slewRate" value="CY_GPIO_SLEW_SLOW"/>
+                        <Param id="driveStrength" value="CY_GPIO_DRIVE_1_2"/>
+                        <Param id="sioOutputBuffer" value="true"/>
+                        <Param id="inFlash" value="true"/>
+                    </Personality>
+                </Block>
+                <Block location="peri[0].div_8[0]">
+                    <Personality template="mxs40peripheralclock" version="1.0">
+                        <Param id="intDivider" value="6"/>
+                        <Param id="fracDivider" value="0"/>
+                        <Param id="startOnReset" value="true"/>
+                    </Personality>
+                </Block>
+                <Block location="srss[0].clock[0].althf[0]">
+                    <Personality template="mxs40althfble" version="1.0">
+                        <Param id="ecoFrequency" value="32000000"/>
+                        <Param id="accuracyPpm" value="50"/>
+                        <Param id="divider" value="1"/>
+                        <Param id="startupTime" value="785"/>
+                        <Param id="loadCap" value="9.900"/>
+                        <Param id="bleVoltageReg" value="CY_BLE_ECO_VOLTAGE_REG_AUTO"/>
+                    </Personality>
+                </Block>
+                <Block location="srss[0].clock[0].hfclk[0]">
+                    <Personality template="mxs40hfclk" version="1.1">
+                        <Param id="sourceClockNumber" value="2"/>
+                        <Param id="divider" value="1"/>
+                    </Personality>
+                </Block>
+                <Block location="srss[0].clock[0].imo[0]">
+                    <Personality template="mxs40imo" version="1.0">
+                        <Param id="trim" value="1"/>
+                    </Personality>
+                </Block>
+                <Block location="srss[0].clock[0].pathmux[2]">
+                    <Personality template="mxs40pathmux" version="1.0">
+                        <Param id="sourceClock" value="althf"/>
+                    </Personality>
+                </Block>
+                <Block location="srss[0].clock[0].periclk[0]">
+                    <Personality template="mxs40periclk" version="1.0">
+                        <Param id="divider" value="2"/>
+                    </Personality>
+                </Block>
+            </BlockConfig>
+            <Netlist/>
+        </Device>
+    </Devices>
+    <Libraries/>
+    <ConfiguratorData/>
+</Design>
