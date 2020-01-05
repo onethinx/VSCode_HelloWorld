@@ -1,6 +1,6 @@
 # Hello World!
 
-This is the Onethinx hello world program.
+This is the Onethinx hello world program for use in conjunction with the OS specific dependencies pack. 
 
 # Preparation
 
