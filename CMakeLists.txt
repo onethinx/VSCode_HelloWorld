@@ -1,12 +1,16 @@
 cmake_minimum_required(VERSION 3.7.2)
 
+set(DEBUG_ON false)
 ######################################################################
 #
 #	Toolchain
 #
 ######################################################################
 
-#set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
+if(${DEBUG_ON})
+    set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
+    message("INFO: path=$ENV{PATH}")
+endif()
 
 set(PDL_VERSION "PDL_1.3.1.1499")
 
@@ -42,15 +46,16 @@ set (CMAKE_TOOLCHAIN_FILE "${CONFIG_DIR}/cmake/arm-none-eabi-toolchain.cmake")
 #
 ######################################################################
 
-
-#launch.json is configured to use this name as the executable to launch.
-message("------ \"Project ${TOP_DIR_NAME}\" ------")
+message("INFO: Project \"${TOP_DIR_NAME}\"")
 project(${TOP_DIR_NAME})
 enable_language(ASM)
 
 execute_process(COMMAND ${CMAKE_C_COMPILER} -print-multi-lib OUTPUT_VARIABLE GCC_VERSION)
-message ("ID:" ${CMAKE_C_COMPILER})
-message ("v:" ${GCC_VERSION})
+string(FIND "${GCC_VERSION}" "armv7-m" ARM_V7M_DETECTED)
+if (${ARM_V7M_DETECTED} EQUAL "-1")
+    message( FATAL_ERROR "Wrong compiler selected, CMake will exit." )
+endif()
+
 # Use Cypress PDL
 include(${CONFIG_DIR}/cmake/cypress_peripheral_drivers_library.cmake)
 
@@ -59,7 +64,7 @@ include(${CONFIG_DIR}/cmake/cypress_peripheral_drivers_library.cmake)
 set(CHIP "CY8C6347BZI_BLD53" CACHE STRING "Chip variant used on a board")
 set_property(CACHE CHIP PROPERTY STRINGS CY8C6347BZI_BLD54 CY8C6347BZI_BLD53)
 
-message("Chip variant: ${CHIP}")
+message("INFO: Chip variant= ${CHIP}")
 add_definitions(-D ${CHIP})
 
 #Include common settings
@@ -67,25 +72,26 @@ include(${CONFIG_DIR}/cmake/common.cmake)
 
 ######################################################################
 #
-#	CPP Definitions
+#	Project compiler & linker options
 #
 ######################################################################
 
 set(PROJECT_FLAGS_ARCH
-    "-mthumb \
-    -Og \
-    -mcpu=cortex-m4 \
-    -mfloat-abi=softfp \
-    -mfpu=fpv4-sp-d16 \
-    -DCYDEV_CLK_ALTHF__HZ=8000000UL"
+    "-mthumb"
+    "-Og"
+    "-mcpu=cortex-m4"
+    "-mslow-flash-data"
+    "-mfloat-abi=softfp"
+    "-mfpu=fpv4-sp-d16"
+    "-DCYDEV_CLK_ALTHF__HZ=8000000UL"
 )
 
 set(PROJECT_LINKER_FLAGS
-    "-Wl,-Map=${PROJECT_NAME}.map \
-    -TOnethinxCore_18.ld"
+    "-Wl,-Map=${PROJECT_NAME}.map"
+    "-TOnethinxCore_18.ld"
 )
 
-set(PROJECT_C_FLAGS_WARNINGS   "${COMMON_FLAGS_WARNINGS} ${C_FLAGS_WARNINGS_EXTRA}")
+set(PROJECT_C_FLAGS_WARNINGS "${COMMON_FLAGS_WARNINGS} ${C_FLAGS_WARNINGS_EXTRA}")
 set(PROJECT_CXX_FLAGS_WARNINGS "${COMMON_FLAGS_WARNINGS}")
 
 ######################################################################
@@ -95,7 +101,6 @@ set(PROJECT_CXX_FLAGS_WARNINGS "${COMMON_FLAGS_WARNINGS}")
 ######################################################################
 
 # Find Source includes folders (containing *.h)
-message("* Project source folder: " ${PROJECT_SOURCE_DIR})
 FIND_DIRECTORIES(SOURCE_INCLUDE_DIRS ${PROJECT_SOURCE_DIR}/*.h)
 # include these paths
 include_directories (
@@ -103,13 +108,10 @@ include_directories (
     ${PDL_INCLUDE_DIRS}
     ${SOURCE_INCLUDE_DIRS}
 )
-message("* Source include folders: " ${SOURCE_INCLUDE_DIRS})
 
 # Find Source files (containing *.c)
 FILE(GLOB_RECURSE SOURCE_SRCS ${SOURCE_DIR}/*.c)
 FILE(GLOB_RECURSE DESIGN_SRCS ${DESIGN_DIR}/GeneratedSource/*.c)
-message("* Source folders: " ${SOURCE_SRCS})
-message("* Design source folders: " ${DESIGN_SRCS})
 
 set(PROJECT_SRCS
     ${SOURCE_SRCS}
@@ -119,17 +121,42 @@ set(PROJECT_SRCS
     ${CY_PDL_DIR}/devices/bsp/COMPONENT_MTB/startup/TOOLCHAIN_GCC_ARM/startup_psoc6_02_cm4.S
 )
 
+if(${DEBUG_ON})
+    message("INFO: Project source folder  = ${PROJECT_SOURCE_DIR}")
+    message("INFO: Source include folders = ${SOURCE_INCLUDE_DIRS}")
+    message("INFO: Source folders         = ${SOURCE_SRCS}")
+    message("INFO: Design source folders  = ${DESIGN_SRCS}")
+endif()
+
 ######################################################################
 #
 #	TARGET
 #
 ######################################################################
 
-set (CMAKE_C_FLAGS   "${C_FLAGS}   ${C_FLAGS_WARNINGS}   ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
 #TODO: Evaluate ASM FLAGS
-set (CMAKE_ASM_FLAGS "${C_FLAGS}   ${C_FLAGS_WARNINGS}   ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
+set (CMAKE_ASM_FLAGS "${C_FLAGS} ${C_FLAGS_WARNINGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
+set (CMAKE_C_FLAGS "${C_FLAGS} ${C_FLAGS_WARNINGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
 set (CMAKE_CXX_FLAGS "${CXX_FLAGS} ${CXX_FLAGS_WARNINGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
 set (CMAKE_EXE_LINKER_FLAGS "${LINKER_FLAGS} ${PROJECT_LINKER_FLAGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
+
+# CMake lists are separated by semicolons, remove these
+string(REGEX REPLACE ";" " " CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}")
+string(REGEX REPLACE ";" " " CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+string(REGEX REPLACE ";" " " CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+string(REGEX REPLACE ";" " " CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}")
+
+set (CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}" CACHE STRING "" FORCE)
+set (CMAKE_C_FLAGS "${CMAKE_C_FLAGS}" CACHE STRING "" FORCE)
+set (CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}" CACHE STRING "" FORCE)
+set (CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS}" CACHE STRING "" FORCE)
+
+if(${DEBUG_ON})
+    message("INFO: ASM Options    = ${CMAKE_ASM_FLAGS}")
+    message("INFO: C Options      = ${CMAKE_C_FLAGS}")
+    message("INFO: C++ Options    = ${CMAKE_CXX_FLAGS}")
+    message("INFO: Linker Options = ${CMAKE_EXE_LINKER_FLAGS}")
+endif()
 
 add_executable(${PROJECT_NAME}.elf ${PROJECT_SRCS} ${PDL_SRCS})
 
