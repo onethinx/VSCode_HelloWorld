@@ -9,22 +9,22 @@
             "executable": "${workspaceRoot}/build/${workspaceFolderBasename}.elf",
             "servertype": "openocd",
             "windows": { 
-                "serverpath": "${env:ONETHINX_PACK_FOLDER}/tools_2.0/openocd/bin/openocd.exe",
+                "serverpath": "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/bin/openocd.exe",
             },
             "linux": { 
-                "serverpath": "${env:ONETHINX_PACK_FOLDER}/tools_2.0/openocd/bin/openocd",
+                "serverpath": "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/bin/openocd",
             },
             "osx": {
-                "serverpath": "${env:ONETHINX_PACK_FOLDER}/tools_2.0/openocd/bin/openocd", 
+                "serverpath": "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/bin/openocd", 
             },
-            "searchDir": [ "${env:ONETHINX_PACK_FOLDER}/tools_2.0/openocd/scripts" ],
+            "searchDir": [ "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/scripts" ],
             "openOCDPreConfigLaunchCommands": [
                 "set PROGRAMMER kitprog3",
                 "set ENABLE_ACQUIRE 0",
                 "set ENABLE_CM0 0"
             ],
             "configFiles": [
-                "${env:ONETHINX_PACK_FOLDER}/config/scripts/openocd.tcl"
+                "${env:ONETHINX_PACK_LOC}/config/scripts/openocd.tcl"
             ],
             "overrideLaunchCommands": [
                 "set mem inaccessible-by-default off",
@@ -60,7 +60,7 @@
                 "tbreak main"
             ],
             // svdFile is optional, it can be very large.
-            "svdFile": "${workspaceFolder}/psoc6pdl/devices/svd/psoc6_01.svd",
+            "svdFile": "${env:ONETHINX_SVD_LOC}/psoc6_01.svd",
             "runToMain": true,                  // if true, program will halt at main. Not used for a restart     
             "preLaunchTask": "Check build",     // Set this to run a task from tasks.json before starting a debug session
             "showDevDebugOutput": false,        // Shows output of GDB, helpful when something is not working right

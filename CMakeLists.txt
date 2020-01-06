@@ -12,14 +12,13 @@ if(${DEBUG_ON})
     message("INFO: path=$ENV{PATH}")
 endif()
 
-set(PDL_VERSION "PDL_1.3.1.1499")
-
-set(TOOLS_DIR $ENV{ONETHINX_PACK_FOLDER}/tools_2.0)
+set(TOOLS_DIR $ENV{ONETHINX_PACK_LOC}/tools_2.0)
 set(DESIGN_DIR ${CMAKE_CURRENT_SOURCE_DIR}/design)
 set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
-set(CONFIG_DIR $ENV{ONETHINX_PACK_FOLDER}/config)
-set(CY_PDL_DIR $ENV{ONETHINX_PACK_FOLDER}/${PDL_VERSION})
-set(LINKER_DIR $ENV{ONETHINX_PACK_FOLDER}/linker)
+set(CONFIG_DIR $ENV{ONETHINX_PACK_LOC}/config)
+set(CY_PDL_DIR $ENV{ONETHINX_PDL_LOC})
+set(LINKER_DIR $ENV{ONETHINX_PACK_LOC}/linker)
+
 
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
     find_program (BASH_TOOL ${TOOLS_DIR}/bash/bash.exe DOC "The bash executable")
@@ -28,6 +27,7 @@ else()
 endif()
 
 find_program(CYPRESS_ELF_TOOL CyMcuElfTool "${TOOLS_DIR}/cymcuelftool-1.0/bin" DOC "Cypress ELF tool executable")
+find_program(READELF_TOOL arm-none-eabi-readelf "${COMPILER_DIR}" DOC "ReadELF tool executable")
 
 #Get the top directory name. This will be used as project_name in later section
 string(FIND ${CMAKE_CURRENT_SOURCE_DIR} / POSITION REVERSE )
@@ -172,7 +172,7 @@ add_custom_target(
     COMMAND "${CYPRESS_ELF_TOOL}" --sign "${PROJECT_NAME}.elf" --output "${PROJECT_NAME}_signed.elf" --hex "${PROJECT_NAME}.hex"
     COMMAND echo "------- Memory usage -------"
     #COMMAND "${CYPRESS_ELF_TOOL}" -A "${PROJECT_NAME}.elf"
-    COMMAND "arm-none-eabi-readelf" -Sl ${PROJECT_NAME}.elf > ${PROJECT_NAME}.readelf
+    COMMAND "${READELF_TOOL}" -Sl ${PROJECT_NAME}.elf > ${PROJECT_NAME}.readelf
     COMMAND "${BASH_TOOL}" ${CONFIG_DIR}/scripts/memcalc.bash ${PROJECT_NAME}.readelf "917504" "229376" "268435456" "134217728" #Flash 0x0e0000   SRAM 0x38000   Flash start 0x10000000   SRAM start 0x08000000
     DEPENDS "${PROJECT_NAME}.elf"
 )
