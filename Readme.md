@@ -5,6 +5,10 @@ This is the Onethinx hello world program for use in conjunction with the OS spec
 # Preparation
 
 1. Make sure you have the [VS Code IDE setup](https://github.com/onethinx/VSCode_HelloWorld/blob/master/SetupVScode_readme.md) done.
+1. Setup your Onethinx dependencies pack from here (and add the environment variable as described):
+- Windows: https://github.com/onethinx/VSCode_OnethinxPack_Windows
+- macOS: https://github.com/onethinx/VSCode_OnethinxPack_macOS
+- Linux: https://github.com/onethinx/VSCode_OnethinxPack_Linux
 1. Clone or download the project to your local machine.
 1. Start VS Code
 1. Load the project: File >> Open >> Select the folder of the project >> OK
