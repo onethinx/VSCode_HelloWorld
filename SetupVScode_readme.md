@@ -1,4 +1,4 @@
-# Setup Onethinx Core Project for VS Code
+# Setup VS Code with the Onethinx Core Dependencies Pack
 
 ## 1.a Windows prerequisites
 - **VS Code**
