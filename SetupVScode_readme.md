@@ -1,4 +1,6 @@
-# Setup VS Code with the Onethinx Core Dependencies Pack
+# Setup the VS Code HelloWorld project
+
+For use with the separate Onethinx Core Dependencies pack.
 
 ## 1.a Windows prerequisites
 - **VS Code**
