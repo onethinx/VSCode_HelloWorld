@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.7.2)
 set(DEBUG_ON false)
 ######################################################################
 #
-#	Toolchain
+#	Toolchain Setup
 #
 ######################################################################
 
@@ -18,7 +18,6 @@ set(SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/source)
 set(CONFIG_DIR $ENV{ONETHINX_PACK_LOC}/config)
 set(CY_PDL_DIR $ENV{ONETHINX_PDL_LOC})
 set(LINKER_DIR $ENV{ONETHINX_PACK_LOC}/linker)
-
 
 if (${CMAKE_HOST_SYSTEM_NAME} MATCHES "Windows")
     find_program (BASH_TOOL ${TOOLS_DIR}/bash/bash.exe DOC "The bash executable")
@@ -38,7 +37,12 @@ set(ENV{TOP_DIR_NAME} ${TOP_DIR_NAME})
 if(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/local.cmake)
     include (${CMAKE_CURRENT_SOURCE_DIR}/local.cmake)
 endif()
-set (CMAKE_TOOLCHAIN_FILE "${CONFIG_DIR}/cmake/arm-none-eabi-toolchain.cmake")
+
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR ARM)
+
+# Without that flag CMake is not able to pass test compilation check
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 ######################################################################
 #
@@ -50,6 +54,7 @@ message("INFO: Project \"${TOP_DIR_NAME}\"")
 project(${TOP_DIR_NAME})
 enable_language(ASM)
 
+#Check if the correct compiler is installed
 execute_process(COMMAND ${CMAKE_C_COMPILER} -print-multi-lib OUTPUT_VARIABLE GCC_VERSION)
 string(FIND "${GCC_VERSION}" "armv7-m" ARM_V7M_DETECTED)
 if (${ARM_V7M_DETECTED} EQUAL "-1")
@@ -78,9 +83,7 @@ include(${CONFIG_DIR}/cmake/common.cmake)
 
 set(PROJECT_FLAGS_ARCH
     "-mthumb"
-    "-Og"
     "-mcpu=cortex-m4"
-    "-mslow-flash-data"
     "-mfloat-abi=softfp"
     "-mfpu=fpv4-sp-d16"
     "-DCYDEV_CLK_ALTHF__HZ=8000000UL"
@@ -90,9 +93,6 @@ set(PROJECT_LINKER_FLAGS
     "-Wl,-Map=${PROJECT_NAME}.map"
     "-TOnethinxCore_18.ld"
 )
-
-set(PROJECT_C_FLAGS_WARNINGS "${COMMON_FLAGS_WARNINGS} ${C_FLAGS_WARNINGS_EXTRA}")
-set(PROJECT_CXX_FLAGS_WARNINGS "${COMMON_FLAGS_WARNINGS}")
 
 ######################################################################
 #
@@ -138,7 +138,7 @@ endif()
 set (CMAKE_ASM_FLAGS "${C_FLAGS} ${C_FLAGS_WARNINGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
 set (CMAKE_C_FLAGS "${C_FLAGS} ${C_FLAGS_WARNINGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
 set (CMAKE_CXX_FLAGS "${CXX_FLAGS} ${CXX_FLAGS_WARNINGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
-set (CMAKE_EXE_LINKER_FLAGS "${LINKER_FLAGS} ${PROJECT_LINKER_FLAGS} ${FLAGS_OPTIMIZATION} ${PROJECT_FLAGS_ARCH}")
+set (CMAKE_EXE_LINKER_FLAGS "${LINKER_FLAGS} ${PROJECT_LINKER_FLAGS} ${FLAGS_OPTIMIZATION}")
 
 # CMake lists are separated by semicolons, remove these
 string(REGEX REPLACE ";" " " CMAKE_ASM_FLAGS "${CMAKE_ASM_FLAGS}")

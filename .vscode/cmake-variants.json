@@ -5,12 +5,12 @@
       "debug": {
         "short": "Debug",
         "long": "No optimizations",
-        "buildType": "customDebug"
+        "buildType": "DEBUG"
       },
       "release": {
         "short": "Release",
         "long": "Full optimizations",
-        "buildType": "customRelease"
+        "buildType": "RELEASE"
       }    
     }
   }
