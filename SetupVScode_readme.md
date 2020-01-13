@@ -4,7 +4,7 @@
 - **VS Code**
     - https://code.visualstudio.com/download
 - **Onethinx Dependencies Pack**
-    - Setup your Onethinx dependencies pack <a href="https://github.com/onethinx/VSCode_OnethinxPack_Windows" target="_blank">from here</a>
+    - Setup the [Onethinx dependencies pack for Windows](https://github.com/onethinx/VSCode_OnethinxPack_Windows)
 ## 1.b MAC OS prerequisites
 - **VS Code**
     - https://code.visualstudio.com/download
@@ -14,14 +14,14 @@
 - **Make**
     - Install homebrew GNU by: 'make brew install homebrew/core/make' as [explained here](https://apple.stackexchange.com/questions/261918/how-to-upgrade-gnu-make-in-os-x-el-capitan).
 - **Onethinx Dependencies Pack**
-    - Setup your Onethinx dependencies pack [from here](https://github.com/onethinx/VSCode_OnethinxPack_macOS)
+    - Setup the [Onethinx dependencies pack for MacOS](https://github.com/onethinx/VSCode_OnethinxPack_macOS)
 ## 1.c Linux prerequisites
 - **VS Code**
     - https://code.visualstudio.com/download
 - **CMake**
     install CMake: `sudo apt install cmake`
 - **Onethinx Dependencies Pack**
-    - Setup your Onethinx dependencies pack [from here](https://github.com/onethinx/VSCode_OnethinxPack_Linux)
+    - Setup the [Onethinx dependencies pack for Linux](https://github.com/onethinx/VSCode_OnethinxPack_Linux)
 - **Apply OpenOCD rules**
     - execute `yourpath\VSCode_OnethinxPack_Linux/tools_2.0/linux/openocd/udev_rules/install_rules.sh` to apply the OpenOCD rules
 ## 2. VS Code Extensions
