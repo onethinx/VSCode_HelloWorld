@@ -4,7 +4,7 @@
 - **VS Code**
     - https://code.visualstudio.com/download
 - **Onethinx Dependencies Pack**
-    - Setup your Onethinx dependencies pack [from here](https://github.com/onethinx/VSCode_OnethinxPack_Windows)
+    - Setup your Onethinx dependencies pack <a href="https://github.com/onethinx/VSCode_OnethinxPack_Windows" target="_blank">from here</a>
 ## 1.b MAC OS prerequisites
 - **VS Code**
     - https://code.visualstudio.com/download
