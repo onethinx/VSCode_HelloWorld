@@ -1,14 +1,12 @@
 # Hello World!
-
 This is the Onethinx hello world program for use in conjunction with the OS specific dependencies pack. 
-
 # Preparation
-
 1. Make sure you have the VS Code IDE & Dependencies Pack setup done:
     - For Windows: [VSCode_OnethinxPack_Windows](https://github.com/onethinx/VSCode_OnethinxPack_Windows)
     - For Linux: [VSCode_OnethinxPack_Linux](https://github.com/onethinx/VSCode_OnethinxPack_Linux)
     - For MacOS: [VSCode_OnethinxPack_MacOS](https://github.com/onethinx/VSCode_OnethinxPack_MacOS)
 1. Clone or download the project to your local machine.
+# Start coding and debugging :-)
 1. Start VS Code
 1. Load the project: File >> Open (Folder) >> Select the folder of the project >> OK
 1. Navigate to source/OnethinxCore/LoRaWAN_keys.h and fill in your LoRaWAN keys.
