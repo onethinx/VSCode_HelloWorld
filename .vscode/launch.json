@@ -8,16 +8,8 @@
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/${workspaceFolderBasename}.elf",
             "servertype": "openocd",
-            "windows": { 
-                "serverpath": "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/bin/openocd.exe",
-            },
-            "linux": { 
-                "serverpath": "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/bin/openocd",
-            },
-            "osx": {
-                "serverpath": "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/bin/openocd", 
-            },
-            "searchDir": [ "${env:ONETHINX_PACK_LOC}/tools_2.0/openocd/scripts" ],
+            "serverpath": "${env:ONETHINX_TOOLS_LOC}/openocd/bin/openocd",
+            "searchDir": [ "${env:ONETHINX_TOOLS_LOC}/openocd/scripts" ],
             "openOCDPreConfigLaunchCommands": [
                 "set PROGRAMMER kitprog3",
                 "set ENABLE_ACQUIRE 0",
@@ -72,25 +64,15 @@
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/${workspaceFolderBasename}.elf",
             "servertype": "openocd",
-            "windows": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/windows/openocd/bin/openocd.exe",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/windows/openocd/scripts" ],
-            },
-            "linux": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/linux/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/linux/openocd/scripts" ],
-            },
-            "osx": {
-                "serverpath": "${workspaceRoot}/tools_2.0/macOS/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/macOS/openocd/scripts" ],
-            },
+            "serverpath": "${env:ONETHINX_TOOLS_LOC}/openocd/bin/openocd",
+            "searchDir": [ "${env:ONETHINX_TOOLS_LOC}/openocd/scripts" ],
             "openOCDPreConfigLaunchCommands": [
                 "set PROGRAMMER jlink",
                 "set ENABLE_ACQUIRE 0",
                 "set ENABLE_CM0 0"
             ],
             "configFiles": [
-                "${workspaceRoot}/config/scripts/openocd.tcl"
+                "${env:ONETHINX_PACK_LOC}/config/scripts/openocd.tcl"
             ],
             "overrideLaunchCommands": [
                 "set mem inaccessible-by-default off",
@@ -140,25 +122,15 @@
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/${workspaceFolderBasename}.elf",
             "servertype": "openocd",
-            "windows": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/windows/openocd/bin/openocd.exe",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/windows/openocd/scripts" ],
-            },
-            "linux": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/linux/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/linux/openocd/scripts" ],
-            },
-            "osx": {
-                "serverpath": "${workspaceRoot}/tools_2.0/macOS/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/macOS/openocd/scripts" ],
-            },
+            "serverpath": "${env:ONETHINX_TOOLS_LOC}/openocd/bin/openocd",
+            "searchDir": [ "${env:ONETHINX_TOOLS_LOC}/openocd/scripts" ],
             "openOCDPreConfigLaunchCommands": [
                 "set PROGRAMMER kitprog3",
                 "set ENABLE_ACQUIRE 0",
                 "set ENABLE_CM0 0"
             ],
             "configFiles": [
-                "${workspaceRoot}/config/scripts/openocd.tcl"
+                "${env:ONETHINX_PACK_LOC}/config/scripts/openocd.tcl"
             ],
             "overrideAttachCommands": [
                 "set mem inaccessible-by-default off",
@@ -188,25 +160,15 @@
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/${workspaceFolderBasename}.elf",
             "servertype": "openocd",
-            "windows": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/windows/openocd/bin/openocd.exe",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/windows/openocd/scripts" ],
-            },
-            "linux": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/linux/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/linux/openocd/scripts" ],
-            },
-            "osx": {
-                "serverpath": "${workspaceRoot}/tools_2.0/macOS/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/macOS/openocd/scripts" ],
-            },
+            "serverpath": "${env:ONETHINX_TOOLS_LOC}/openocd/bin/openocd",
+            "searchDir": [ "${env:ONETHINX_TOOLS_LOC}/openocd/scripts" ],
             "openOCDPreConfigLaunchCommands": [
                 "set PROGRAMMER kitprog3",
                 "set ENABLE_ACQUIRE 0",
                 "set ENABLE_CM0 0"
             ],
             "configFiles": [
-                "${workspaceRoot}/config/scripts/openocd.tcl"
+                "${env:ONETHINX_PACK_LOC}/config/scripts/openocd.tcl"
             ],
             "overrideLaunchCommands": [
                 "monitor reset init",
@@ -222,25 +184,15 @@
             "cwd": "${workspaceRoot}",
             "executable": "${workspaceRoot}/build/${workspaceFolderBasename}.elf",
             "servertype": "openocd",
-            "windows": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/windows/openocd/bin/openocd.exe",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/windows/openocd/scripts" ],
-            },
-            "linux": { 
-                "serverpath": "${workspaceRoot}/tools_2.0/linux/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/linux/openocd/scripts" ],
-            },
-            "osx": {
-                "serverpath": "${workspaceRoot}/tools_2.0/macOS/openocd/bin/openocd",
-                "searchDir": [ "${workspaceRoot}/tools_2.0/macOS/openocd/scripts" ],
-            },
+            "serverpath": "${env:ONETHINX_TOOLS_LOC}/openocd/bin/openocd",
+            "searchDir": [ "${env:ONETHINX_TOOLS_LOC}/openocd/scripts" ],
             "openOCDPreConfigLaunchCommands": [
                 "set PROGRAMMER kitprog3",
                 "set ENABLE_ACQUIRE 0",
                 "set ENABLE_CM0 0"
             ],
             "configFiles": [
-                "${workspaceRoot}/config/scripts/openocd.tcl"
+                "${env:ONETHINX_PACK_LOC}/config/scripts/openocd.tcl"
             ],
             "overrideLaunchCommands": [
                 "monitor psoc6 sflash_restrictions 1",
