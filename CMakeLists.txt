@@ -25,7 +25,7 @@ else()
     find_program (BASH_TOOL bash DOC "The bash executable")
 endif()
 
-find_program(CYPRESS_ELF_TOOL CyMcuElfTool "${TOOLS_DIR}/cymcuelftool-1.0/bin" DOC "Cypress ELF tool executable")
+find_program(CYPRESS_ELF_TOOL cymcuelftool "${TOOLS_DIR}/cymcuelftool-1.0/bin" DOC "Cypress ELF tool executable")
 find_program(READELF_TOOL arm-none-eabi-readelf "${COMPILER_DIR}" DOC "ReadELF tool executable")
 
 #Get the top directory name. This will be used as project_name in later section
