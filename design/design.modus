@@ -40,19 +40,9 @@
                         <Param id="startOnReset" value="true"/>
                     </Personality>
                 </Block>
-                <Block location="srss[0].clock[0].althf[0]">
-                    <Personality template="mxs40althfble" version="1.0">
-                        <Param id="ecoFrequency" value="32000000"/>
-                        <Param id="accuracyPpm" value="50"/>
-                        <Param id="divider" value="1"/>
-                        <Param id="startupTime" value="785"/>
-                        <Param id="loadCap" value="9.900"/>
-                        <Param id="bleVoltageReg" value="CY_BLE_ECO_VOLTAGE_REG_AUTO"/>
-                    </Personality>
-                </Block>
                 <Block location="srss[0].clock[0].hfclk[0]">
                     <Personality template="mxs40hfclk" version="1.1">
-                        <Param id="sourceClockNumber" value="2"/>
+                        <Param id="sourceClockNumber" value="0"/>
                         <Param id="divider" value="1"/>
                     </Personality>
                 </Block>
@@ -61,14 +51,14 @@
                         <Param id="trim" value="1"/>
                     </Personality>
                 </Block>
-                <Block location="srss[0].clock[0].pathmux[2]">
+                <Block location="srss[0].clock[0].pathmux[0]">
                     <Personality template="mxs40pathmux" version="1.0">
-                        <Param id="sourceClock" value="althf"/>
+                        <Param id="sourceClock" value="imo"/>
                     </Personality>
                 </Block>
                 <Block location="srss[0].clock[0].periclk[0]">
                     <Personality template="mxs40periclk" version="1.0">
-                        <Param id="divider" value="2"/>
+                        <Param id="divider" value="1"/>
                     </Personality>
                 </Block>
             </BlockConfig>
