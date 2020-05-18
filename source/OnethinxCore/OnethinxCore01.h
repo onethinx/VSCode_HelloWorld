@@ -49,10 +49,11 @@
  * 0x000000B2	Cleared RX-timeout flag if no downlink response is expected, added DevEUI & build info, fixed high power consumption glitches at wakeup, Added LowPowerDebug, Improved active-power consumption
  * 0x000000B3	Fix Join accept on SF12 in RX1 window
  * 0x000000B4	Fix WakeUp pin in Sleepmode, FlashRead fix for row !=0
- *
- * Known Issues:
- *   Confirmed downlink message doesn't get confirmation from device
- *   ADR not working yet
+ * 0x000000B5	Fix Flashwrites after sleep
+ * 0x000000B7	Restructured stack core, Capsense confguration fix, Add LoRa<>LoRa functionality, Add MAC Cmd LinkADR, Fixed RX window timing, Fix confirmed downlink reply, Fix US join implementation, Add Low Power Join, Stability fixes
+ * 0x000000B8	Restructured stack core, added low-power idle/join
+ * 0x000000B9	Fix ADR
+ * 0x000000BA	Unlock functions to use Port 6 & 7 for Capsense and SDW IOs
  *
  ********************************************************************************/
 
@@ -62,9 +63,9 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-/* Do not modify. If stack version does not match, implement correct OnethinxCore.h & .c API drivers */
-#define minimumVersion 	0x000000B2
-#define maximumVersion 	0x000000B5
+/* Do not modify. If stack version does not match, implement correct OnethinxCore.h & .c API drivers from the Onethinx Github page */
+#define minimumVersion 	0x000000B8
+#define maximumVersion 	0x000000BA
 
 typedef struct arr8b_t  { uint8_t bytes[8];  } arr8b_t;
 typedef struct arr16b_t { uint8_t bytes[16]; } arr16b_t;
@@ -154,34 +155,37 @@ typedef enum {
     DR_5						= 0x05,		//!< EU: SF7 125KHz
     DR_6						= 0x06,		//!< EU: SF7 250KHz
     DR_7						= 0x07,		//!< EU: FSK 50kbps (unsupported)
-    DR_8						= 0x08,		//!< US: SF12 500KHz
-    DR_9						= 0x09,		//!< US: SF11 500KHz
-    DR_10						= 0x0A,		//!< US: SF10 500KHz
-    DR_11						= 0x0B,		//!< US: SF9 500KHz
-    DR_12						= 0x0C,		//!< US: SF8 500KHz
-    DR_13						= 0x0D,		//!< US: SF7 500KHz
+    DR_8						= 0x08,		//!< US: SF12 500KHz (downlinks only)
+    DR_9						= 0x09,		//!< US: SF11 500KHz (downlinks only)
+    DR_10						= 0x0A,		//!< US: SF10 500KHz (downlinks only)
+    DR_11						= 0x0B,		//!< US: SF9 500KHz (downlinks only)
+    DR_12						= 0x0C,		//!< US: SF8 500KHz (downlinks only)
+    DR_13						= 0x0D,		//!< US: SF7 500KHz (downlinks only)
     DR_ADR						= 0xF0,		//!< Adaptive DataRate
 	DR_AUTO						= 0xF1,		//!< Automatic DataRate (during joining)
 } Radio_DataRate_e;
 
-#if defined (region_EU868)
-#define	MAX_DR	6
-#elif defined (region_US915)
-#define	MAX_DR	13
-#endif
-
 typedef enum {
-	PWR_MAX						= 0x00,
-	PWR_ATT_2dB					= 0x01,
-	PWR_ATT_4dB					= 0x02,
-	PWR_ATT_6dB					= 0x03,
-	PWR_ATT_8dB					= 0x04,
-	PWR_ATT_10dB				= 0x05,
-	PWR_ATT_12dB				= 0x06,
-	PWR_ATT_14dB				= 0x07,
-	PWR_ADR						= 0xF0,
+	PWR_ADR						= 0xF0,		//!< ADR (Automatic Power setting by LoRaWAN network)
+	PWR_MAX						= 0x00,		//!<  15dBm for SX1261,  22dBm for SX1262
+	PWR_ATT_2dB					= 0x01,		//!<  14dBm for SX1261,  20dBm for SX1262
+	PWR_ATT_4dB					= 0x02,		//!<  12dBm for SX1261,  18dBm for SX1262
+	PWR_ATT_6dB					= 0x03,		//!<  10dBm for SX1261,  16dBm for SX1262
+	PWR_ATT_8dB					= 0x04,		//!<   8dBm for SX1261,  14dBm for SX1262
+	PWR_ATT_10dB				= 0x05,		//!<   6dBm for SX1261,  12dBm for SX1262
+	PWR_ATT_12dB				= 0x06,		//!<   4dBm for SX1261,  10dBm for SX1262
+	PWR_ATT_14dB				= 0x07,		//!<   2dBm for SX1261,   8dBm for SX1262
+	PWR_ATT_16dB				= 0x08,		//!<   0dBm for SX1261,   6dBm for SX1262
+	PWR_ATT_18dB				= 0x09,		//!<  -2dBm for SX1261,   4dBm for SX1262
+	PWR_ATT_20dB				= 0x0A,		//!<  -4dBm for SX1261,   2dBm for SX1262
+	PWR_ATT_22dB				= 0x0B,		//!<  -6dBm for SX1261,   0dBm for SX1262
+	PWR_ATT_24dB				= 0x0C,		//!<  -8dBm for SX1261,  -2dBm for SX1262
+	PWR_ATT_26dB				= 0x0D,		//!< -10dBm for SX1261,  -4dBm for SX1262
+	PWR_ATT_28dB				= 0x0E,		//!< -12dBm for SX1261,  -6dBm for SX1262
+	PWR_ATT_30dB				= 0x0F,		//!< -14dBm for SX1261,  -8dBm for SX1262
+    PWR_ATT_32dB				= 0x10,		//!< -16dBm for SX1261,  -9dBm for SX1262
+	PWR_MIN						= 0x11,		//!< -17dBm for SX1261,  -9dBm for SX1262
 } Radio_TXpower_e;
-#define	MAX_TXpower		7
 
 typedef enum {
 	US_SUB_BAND_1			    = 0,
@@ -201,6 +205,19 @@ typedef enum {
 	EU_SUB_BAND2_OFF		    = 4
 } Radio_SubBands_e;
 
+typedef enum  {
+	M0_Active		 			= 0x0,			//!< Keep M0+ active during system idle
+	M0_Sleep		 			= 0x1,			//!< Put M0+ in Sleep mode during system idle
+	M0_DeepSleep	 			= 0x2,			//!< Put M0+ in DeepSleep mode during system idle
+} IdleMode_e;
+
+typedef enum  {
+	M4_NoWait			 		= 0x0,			//!< Do not wait till stack finished
+	M4_WaitActive		 		= 0x1,			//!< Wait while stack busy, M4 stays in Active mode
+	M4_WaitSleep		 		= 0x2,			//!< M4 goes into Sleep while is stack busy
+	M4_WaitDeepSleep	 		= 0x3,			//!< M4 goes into DeepSleep while is stack busy
+} WaitMode_e;
+
 typedef union {
 	struct  __attribute__ ((__packed__)) {
 		struct  __attribute__ ((__packed__)) {
@@ -212,12 +229,20 @@ typedef union {
 		} TX;
 		struct  __attribute__ ((__packed__)) {
 			LoRaWAN_keys_t *		KeysPtr;
-			Radio_DataRate_e		DataRate			: 8;
+			Radio_DataRate_e		DataRate			: 8;			//!< Not used for US version (defined by LoRaWAN spec)
 			Radio_TXpower_e			Power				: 8;
 			uint8_t					MAXTries			: 8;
             uint8_t					SubBand_1st    		: 4;
             uint8_t					SubBand_2nd    		: 4;
 		} Join;
+		struct  __attribute__ ((__packed__)) {
+			struct {
+				IdleMode_e				Mode			: 2;			/**< Set Idle Mode to idleActive, idleSleep or idleDeepSleep */
+				bool 					BleEcoON	  	: 1;			/**< Leaves BLE ECO ON during idle. Consumes additional power, enable only when ECO/BLE functionality is needed */
+				bool 					DebugON			: 1;			/**< Leaves Debug Port active during idle. Consumes additional power, enable only for debugging purposes */
+		
+			} Idle;
+		} System;
 	};
 	uint8_t reserved[32];
 } coreConfiguration_t;
@@ -241,6 +266,7 @@ typedef enum __attribute__ ((__packed__)) {
 	radio_ImgCalibError			= 0x08,		//!< Image calibration failed
 	radio_AdcCalibError			= 0x09,		//!< ADC calibration failed
 	radio_PaRampError			= 0x0A,		//!< PA ramp failed
+	radio_InvalidFrequency		= 0x0B,		//!< Invalid frequency set
 	radio_UndefinedError		= 0xFA
 } radioErrors_e;
 
@@ -273,8 +299,8 @@ typedef enum __attribute__ ((__packed__)) {
 typedef union {
 	struct
 	{
-		paramErrors_e 			errorStatus 	: 8;	//!< Parameter Errors
-		uint8_t									: 8;	//!< reserved
+		paramErrors_e 			errorStatus 			: 8;	//!< Parameter Errors
+		uint8_t											: 8;	//!< reserved
 	};
 	uint8_t reserved[16];
 } parameterStatus_t;
@@ -282,10 +308,10 @@ typedef union {
 typedef union {
 	struct
 	{
-		radioErrors_e 			errorStatus 	: 8;	//!< Radio Errors
-		uint8_t							 		: 6;	//!< reserved
-		bool 					isConfigured	: 1;	//!< The Radio is configured? (implemented since Stack version 0x000000B5)
-		bool 					isBusy			: 1;	//!< Radio is busy?
+		radioErrors_e 			errorStatus 			: 8;	//!< Radio Errors
+		uint8_t							 				: 6;	//!< reserved
+		bool 					isConfigured			: 1;	//!< The Radio is configured? (implemented since Stack version 0x000000B5)
+		bool 					isBusy					: 1;	//!< Radio is busy?
 	};
 	uint8_t reserved[16];
 } radioStatus_t;
@@ -293,15 +319,16 @@ typedef union {
 typedef union {
 	struct
 	{
-		macErrors_e 			errorStatus  	: 8;	//!< MAC Errors
-		uint8_t		 			bytesToRead  	: 8;	//!< Total bytes in Receive buffer
-		uint8_t							 		: 3;	//!< reserved
-		bool 					isConfigured	: 1;	//!< The MAC is configured?
-		bool 					messageReceived	: 1;	//!< The MAC received a message
-		bool 					isJoined 		: 1;	//!< Chip mode
-		bool 					isBusy			: 1;	//!< Chip mode
-		bool 					isPublicNetwork	: 1;	//!< True for LoRaWAN Public Network
-		uint32_t				devAddr;				//!< The Device address received when joining the network
+		macErrors_e 			errorStatus  			: 8;	//!< MAC Errors
+		uint8_t		 			bytesToRead  			: 8;	//!< Total bytes in Receive buffer
+		uint8_t							 				: 2;	//!< reserved
+		bool 					confDown     			: 1;	//!< Is a confirmed downlink sent? (implemented since Stack version 0x000000B5)
+		bool 					isConfigured			: 1;	//!< The MAC is configured?
+		bool 					messageReceived			: 1;	//!< The MAC received a message
+		bool 					isJoined 				: 1;	//!< Is Device Joined?
+		bool 					isBusy					: 1;	//!< Is the MAC busy?
+		bool 					isPublicNetwork			: 1;	//!< True for LoRaWAN Public Network
+		uint32_t				devAddr;						//!< The Device address received when joining the network
 	};
 	uint8_t reserved[16];
 }  macStatus_t;
@@ -315,6 +342,7 @@ typedef union {
 		bool 					breakCurrentFunction	: 1;  //!< Break current execution
 		bool 					isStarted  				: 1;  //!< System is started?
 		bool 					isBusy  				: 1;  //!< System is busy?
+		bool 					isSleeping 				: 1;  //!< System is sleeping?
 	};
 	uint8_t reserved[16];
 }  systemStatus_t;
@@ -374,9 +402,6 @@ typedef enum  {
 	modeSleep		 			= 0x1,
 	modeDeepSleep	 			= 0x2,
 	modeHibernate	 			= 0x3,
-	modeSleepDebugOn			= 0x9,			/**< Keeping debug active consumes extra power, use only for debugging purposes */
-	modeDeepSleepDebugOn		= 0xA,			/**< Keeping debug active consumes extra power, use only for debugging purposes */
-	modeHibernateDebugOn		= 0xB,			/**< Keeping debug active consumes extra power, use only for debugging purposes */	
 } sleepMode_e;
 
 typedef enum  {
@@ -396,9 +421,11 @@ typedef enum  {
 /** Make sure to initialize all members, best practise is to use examples */
 typedef struct  __attribute__ ((__packed__))
 {
-	wakeUpPin_t		wakeUpPin;							// 24 bits
-	wakeUpTime_t	wakeUpTime;							// 40 bits
-	sleepMode_e		sleepMode			: 4;
+	wakeUpPin_t		wakeUpPin;							/**< S24 bits  */
+	wakeUpTime_t	wakeUpTime;							/**< S40 bits  */
+	sleepMode_e		sleepMode			: 2;			/**< Set sleepmode to Sleep, DeepSleep or Hibernate*/
+	bool 			BleEcoON	 	 	: 1;			/**< Leaves BLE ECO ON during sleep. Consumes additional power, enable only when ECO/BLE functionality is needed during sleep*/
+	bool 			DebugON				: 1;			/**< Leaves Debug Port active during idle. Consumes additional power, enable only for debugging purposes */
 	sleepCores_e	sleepCores			: 4;
 	bool			saveMAC				: 1;
 	uint32_t							: 31;
@@ -433,20 +460,16 @@ typedef struct  __attribute__ ((__packed__))
 	char			stackStage;								/**< core firmware lifecycle stage: 'a' pre-alpha, 'A' Alpha, 'b' perpetual beta, 'B' Beta, 'r' release candidate, 'R' Release */
 	char			codeName[16];							/**< core firmware code name */
 } coreInfo_t;
-
-//extern volatile coreArguments_t * 				coreArgumentsPtr;
-//extern coreConfiguration_t * 			coreConfigurationPtr;
-//extern coreStatus_t *					coreStatusPtr;
 	
 coreStatus_t				LoRaWAN_Reset(void);
 coreStatus_t		 		LoRaWAN_Init(coreConfiguration_t * coreConfigurationPtr);
 coreStatus_t				LoRaWAN_GetInfo(coreInfo_t * coreInfo);
-coreStatus_t				LoRaWAN_Join(bool waitTillFinished);
+coreStatus_t				LoRaWAN_Join(WaitMode_e waitMode);
 coreStatus_t				LoRaWAN_MacSave();
 coreStatus_t				LoRaWAN_FlashRead(uint8_t* buffer, uint8_t block, uint8_t length);
 coreStatus_t				LoRaWAN_FlashWrite(uint8_t* buffer, uint8_t block, uint8_t length);
 coreStatus_t 				LoRaWAN_GetRXdata(uint8_t * RXdata, uint8_t length);
-coreStatus_t 				LoRaWAN_Send(uint8_t* buffer, uint8_t length, bool waitTillFinished);
+coreStatus_t 				LoRaWAN_Send(uint8_t* buffer, uint8_t length, WaitMode_e waitMode);
 coreStatus_t 				LoRaWAN_Sleep(sleepConfig_t * sleepConfig);
 coreStatus_t 				LoRaWAN_GetStatus();
 errorStatus_t 				LoRaWAN_GetError();

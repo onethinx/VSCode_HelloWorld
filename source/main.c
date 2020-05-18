@@ -29,9 +29,22 @@ coreConfiguration_t	coreConfig = {
     .Join.SubBand_1st =     EU_SUB_BANDS_DEFAULT,
 	.Join.SubBand_2nd =     EU_SUB_BANDS_DEFAULT,
 	.TX.Confirmed = 		false,
-	.TX.DataRate = 			DR_0,
-	.TX.Power = 			PWR_MAX,
+	.TX.DataRate = 			DR_ADR,		// Adaptive Data Rate
+	.TX.Power = 			PWR_ADR,	// Adaptive Data Rate
 	.TX.FPort = 			1,
+	.System.Idle.Mode = 	M0_DeepSleep,
+	.System.Idle.BleEcoON = false,
+	.System.Idle.DebugON =  true,
+};
+
+sleepConfig_t sleepConfig =
+{
+	.sleepMode = modeDeepSleep,
+	.BleEcoON = false,
+	.DebugON = true,
+	.sleepCores = coresBoth,
+	.wakeUpPin = wakeUpPinHigh(true),
+	.wakeUpTime = wakeUpDelay(0, 0, 0, 20), // day, hour, minute, second
 };
 
 /*******************************************************************************arm-none-eabi-gcc
@@ -53,6 +66,7 @@ uint8_t TXbuffer[64];
 
 int main(void)
 {
+	CyDelay(1000); // Needs to be here
 	uint8_t j=0;
 
 	/* initialize hardware configuration */
@@ -61,7 +75,7 @@ int main(void)
 	/* enable global interrupts */
 	__enable_irq();
 
-	/* Blue LED ON */
+	/* Blue LED ON while joining*/
 	LED_B_SET(LED_ON);
 
 	/* initialize radio with parameters in coreConfig */
@@ -71,26 +85,25 @@ int main(void)
 	LoRaWAN_GetInfo(&coreInfo);
 
 	/* send join using parameters in coreConfig, blocks until either success or MAXtries */
-	coreStatus = LoRaWAN_Join(true);
+	coreStatus = LoRaWAN_Join(M4_WaitDeepSleep);
 
-	/* check for successful join */
+	/* check for successful join, flash Red LED if not joined */
 	if (!coreStatus.mac.isJoined){
+		LED_B_SET(LED_OFF);
 		while(1) {
-			LED_B_INV;
+			LED_R_INV;
 			CyDelay(100);
 		}
-	} else {
-		LED_B_SET(LED_OFF);
-		/*delay before first message will be sent */
-		CyDelay(1000);
 	}
+	LED_B_SET(LED_OFF);
 
 	/* main loop */
 	for(;;)
 	{
+		/* Blue LED on while sending*/
 		LED_B_SET(LED_ON);
 
-		/* compose a message to send */
+		/* Compose a message to send */
         j=0;
         TXbuffer[j++] = 0x48; /* H */
 		TXbuffer[j++] = 0x45; /* E */
@@ -103,18 +116,15 @@ int main(void)
 		TXbuffer[j++] = 0x52; /* R */
 		TXbuffer[j++] = 0x4c; /* L */
 		TXbuffer[j++] = 0x44; /* D */
-        coreStatus = LoRaWAN_Send((uint8_t *) TXbuffer, j, true);
-		CyDelay(1000);
-        if( coreStatus.system.errorStatus == system_BusyError ){
-        	for(int i=0; i<10; i++){
-				LED_B_INV;
-				CyDelay(100);
-        	}
-        }
-		LED_B_SET(LED_OFF);
 
-		/* wait before sending next message */
-		CyDelay( 10000 );
+		/* Send message over LoRaWAN */
+        coreStatus = LoRaWAN_Send(TXbuffer, j, M4_WaitDeepSleep);
+
+		/* Turn led off before sleep */
+		LED_B_SET(LED_ON);
+
+		/* Sleep before sending next message, wake up with a button as well */
+		LoRaWAN_Sleep(&sleepConfig);
 	}
 }
 
