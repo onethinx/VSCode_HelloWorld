@@ -121,7 +121,7 @@ int main(void)
         coreStatus = LoRaWAN_Send(TXbuffer, j, M4_WaitDeepSleep);
 
 		/* Turn led off before sleep */
-		LED_B_SET(LED_ON);
+		LED_B_SET(LED_OFF);
 
 		/* Sleep before sending next message, wake up with a button as well */
 		LoRaWAN_Sleep(&sleepConfig);
