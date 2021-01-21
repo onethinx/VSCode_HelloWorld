@@ -182,6 +182,14 @@ coreStatus_t LoRaWAN_Send(uint8_t * bufferPtr, uint8_t length, WaitMode_e waitMo
 	return coreComm(coreFunction_LW_send, waitMode);
 }
 
+coreStatus_t LoRaWAN_SendMac(uint8_t* bufferPtr, uint8_t length, WaitMode_e waitMode, MACcmd_e MACcmd)
+{
+	coreArguments.arg1 = (uint32_t) bufferPtr;
+	coreArguments.arg2 = length;
+	coreArguments.arg3 = MACcmd;
+	return coreComm(coreFunction_LW_sendMac, waitMode);
+}
+
 coreStatus_t LoRaWAN_GetRXdata(uint8_t * RXdata, uint8_t length)
 {
 	coreArguments.arg1 = (uint32_t) RXdata;
